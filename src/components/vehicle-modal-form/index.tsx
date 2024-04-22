@@ -21,7 +21,11 @@ interface VehicleModalFormProps {
 
 const schema = z.object({
   brand: z.string({ required_error: "Marca é obrigatório" }).min(3),
-  plate: z.string({ required_error: "Placa é obrigatório" }).length(7),
+  plate: z
+    .string({ required_error: "Placa é obrigatório" })
+    .regex(/^[A-Z]{3}-\d{4}$/i, {
+      message: "Placa de carro inválida",
+    }),
 });
 
 export const VehicleModalForm = ({
@@ -93,6 +97,9 @@ export const VehicleModalForm = ({
           />
           <Button type="submit" variant="contained" size="large">
             Adicionar
+          </Button>
+          <Button variant="outlined" size="large" onClick={handleClose}>
+            Voltar
           </Button>
         </form>
       </DialogContent>

@@ -4,15 +4,22 @@ import { z } from "zod";
 import { useEffect } from "react";
 import { Vehicle } from "@/lib/store/vehicleStore";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldValues, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import { useDriverStore, Driver } from "@/lib/store/driverStore";
 
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import TextField from "@mui/material/TextField";
-import { MenuItem, Select } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
+import React from "react";
 
 interface DriverModalFormProps {
   open: boolean;
@@ -28,8 +35,8 @@ const schema = z.object({
     .string({ required_error: "CPF é obrigatório" })
     .refine((doc) => {
       const replacedDoc = doc.replace(/\D/g, "");
-      return replacedDoc.length >= 11;
-    }, "CPF deve conter no mínimo 11 caracteres.")
+      return replacedDoc.length === 11;
+    }, "CPF deve 11 caracteres.")
     .refine((doc) => {
       const replacedDoc = doc.replace(/\D/g, "");
       return !!Number(replacedDoc);
@@ -52,6 +59,7 @@ export const DriverModalForm = ({
     setValue,
     reset,
     watch,
+    control,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
@@ -106,26 +114,42 @@ export const DriverModalForm = ({
             {...register("document")}
             error={!!errors.document}
           />
-          <Select
-            id="vehicle"
-            label="Veículo"
-            placeholder="Veículo"
-            {...register("vehicle")}
-            disabled={vehicles.length <= 0 ? true : false}
-            error={!!errors.vehicle}
-          >
-            {vehicles.length <= 0 ? (
-              <MenuItem disabled>Não possui nenhum veículo cadastrado</MenuItem>
-            ) : (
-              vehicles?.map((option) => (
-                <MenuItem key={option.id} value={option.id}>
-                  {option.brand} - {option.plate}
-                </MenuItem>
-              ))
+          <Controller
+            name="vehicle"
+            control={control}
+            render={({ field }) => (
+              <FormControl fullWidth>
+                <InputLabel id="vehicle">
+                  {vehicles.length <= 0
+                    ? "Não possui nenhum veículo cadastrado"
+                    : "Veículo"}
+                </InputLabel>
+                <Select
+                  {...field}
+                  id="vehicle"
+                  label={
+                    vehicles.length <= 0
+                      ? "Não possui nenhum veículo cadastrado"
+                      : "Veículo"
+                  }
+                  error={!!errors.vehicle}
+                  disabled={vehicles.length <= 0 ? true : false}
+                >
+                  {vehicles?.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.brand} - {option.plate}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             )}
-          </Select>
+          />
+
           <Button type="submit" variant="contained" size="large">
             {!data ? "Adicionar" : "Salvar"}
+          </Button>
+          <Button variant="outlined" size="large" onClick={handleClose}>
+            Voltar
           </Button>
         </form>
       </DialogContent>
