@@ -107,10 +107,10 @@ export const DriverModalForm = ({
             label="Veículo"
             placeholder="Veículo"
             {...register("vehicle")}
-            disabled={vehicles == [] ? true : false}
+            disabled={vehicles.length <= 0 ? true : false}
             error={!!errors.vehicle}
           >
-            {vehicles == [] ? (
+            {vehicles.length <= 0 ? (
               <MenuItem disabled>Não possui nenhum veículo cadastrado</MenuItem>
             ) : (
               vehicles?.map((option) => (
