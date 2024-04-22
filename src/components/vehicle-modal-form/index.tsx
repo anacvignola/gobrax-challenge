@@ -96,7 +96,7 @@ export const VehicleModalForm = ({
             error={!!errors.plate}
           />
           <Button type="submit" variant="contained" size="large">
-            Adicionar
+            {!data ? "Adicionar" : "Salvar"}
           </Button>
           <Button variant="outlined" size="large" onClick={handleClose}>
             Voltar
