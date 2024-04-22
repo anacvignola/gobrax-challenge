@@ -23,7 +23,7 @@ export const Animation = () => {
         height: "100%",
       }}
     >
-      <Lottie options={defaultOptions} width={600} height={600} />
+      <Lottie options={defaultOptions} width={400} height={400} />
     </Box>
   );
 };
