@@ -1,37 +1,31 @@
 "use client";
 
 import * as React from "react";
-import { useEffect } from "react";
-import { useVehicleStore } from "@/lib/store/vehicleStore";
-import { useDriverStore, Driver } from "@/lib/store/driverStore";
-
-import {
-  GridActionsCellItem,
-  GridColDef,
-  GridRenderCellParams,
-  GridRowId,
-} from "@mui/x-data-grid";
 import Header from "@/components/header";
 import { Table } from "@/components/table";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import { Selected } from "@/components/selected";
 import { Container, Button } from "@mui/material";
-import { Animation } from "@/components/animation";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { DriverModalForm } from "@/components/driver-modal-form";
+import { useDriverStore } from "@/lib/store/driverStore";
+import { Vehicle, useVehicleStore } from "@/lib/store/vehicleStore";
+import { VehicleModalForm } from "@/components/vehicle-modal-form";
+import { GridActionsCellItem, GridColDef, GridRowId } from "@mui/x-data-grid";
+import { useEffect } from "react";
+import { Animation } from "@/components/animation";
 
 type Selected = {
   driver?: string;
   vehicle?: string;
 };
 
-export default function Home() {
+export default function VehiclesPage() {
   const [openModal, setOpenModal] = React.useState(false);
   const drivers = useDriverStore((state) => state.drivers);
   const vehicles = useVehicleStore((state) => state.vehicles);
-  const [driver, setDriver] = React.useState<Driver | null>(null);
-  const removeDriver = useDriverStore((state) => state.removeDriver);
+  const [vehicle, setVehicle] = React.useState<Vehicle | null>(null);
+  const removeVehicle = useVehicleStore((state) => state.removeVehicle);
 
   const [selected, setSelected] = React.useState<Selected>({
     driver: "",
@@ -39,23 +33,23 @@ export default function Home() {
   });
 
   const handleEditClick = (id: GridRowId | any) => () => {
-    const data = drivers?.filter((driver) => driver?.id === id);
-    setDriver(data[0]);
+    const data = vehicles?.filter((vehicle) => vehicle?.id === id);
+    setVehicle(data[0]);
     setOpenModal(true);
   };
 
   const handleDeleteClick = (id: GridRowId | any) => () => {
-    removeDriver(id);
+    removeVehicle(id);
   };
 
-  const clearDriver = () => {
-    setDriver(null);
+  const clearVehicle = () => {
+    setVehicle(null);
   };
 
   const onRowSelectionModelChange = (row: any) => {
-    const selectDriver = drivers?.filter((driver) => driver?.id !== row);
-    const selectVehicle = vehicles?.filter(
-      (vehicle) => vehicle?.id !== selectDriver[0].vehicle
+    const selectVehicle = vehicles?.filter((vehicle) => vehicle?.id !== row);
+    const selectDriver = drivers?.filter(
+      (driver) => driver?.vehicle !== selectVehicle[0].id
     );
     setSelected({
       driver: selectDriver[0]?.name,
@@ -66,22 +60,14 @@ export default function Home() {
   const columns: GridColDef<(typeof drivers)[number]>[] = [
     { field: "id", headerName: "ID", minWidth: 300 },
     {
-      field: "name",
-      headerName: "Nome",
+      field: "brand",
+      headerName: "Marca",
       minWidth: 200,
     },
     {
-      field: "document",
-      headerName: "Documento",
+      field: "plate",
+      headerName: "Placa",
       minWidth: 150,
-    },
-    {
-      field: "vehicle",
-      headerName: "Veículo",
-      minWidth: 150,
-      renderCell: (params: GridRenderCellParams<any, Date>) => (
-        <span>{!params.value ? "Não" : "Sim"}</span>
-      ),
     },
     {
       field: "actions",
@@ -123,9 +109,9 @@ export default function Home() {
         <Container
           sx={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
             margin: "30px 0",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
           }}
         >
           <Selected driver={selected?.driver} vehicle={selected?.vehicle} />
@@ -135,32 +121,27 @@ export default function Home() {
             variant="contained"
             onClick={() => setOpenModal(true)}
           >
-            Add Motorista
+            Add Veículo
           </Button>
         </Container>
         <Container>
-          {drivers.length <= 0 ? (
+          {vehicles.length <= 0 ? (
             <Animation />
           ) : (
             <Table
               columns={columns}
-              rows={drivers}
+              rows={vehicles}
               onRowSelectionModelChange={onRowSelectionModelChange}
             />
           )}
         </Container>
       </Container>
-      {openModal === true ? (
-        <DriverModalForm
-          data={driver}
-          open={openModal}
-          vehicles={vehicles}
-          clearDriver={clearDriver}
-          handleClose={() => setOpenModal(false)}
-        />
-      ) : (
-        ""
-      )}
+      <VehicleModalForm
+        data={vehicle}
+        clearVehicle={clearVehicle}
+        open={openModal}
+        handleClose={() => setOpenModal(false)}
+      />
     </>
   );
 }

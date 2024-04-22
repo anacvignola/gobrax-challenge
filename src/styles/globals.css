@@ -1,0 +1,20 @@
+:root {
+  font-family: "Roboto", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: #FFFFFF;
+}
+
+form {
+  width: 100%;
+  display: grid;
+  grid-auto-rows: auto;
+  row-gap: 20px;
+}
