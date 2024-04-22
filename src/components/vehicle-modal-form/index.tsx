@@ -64,12 +64,16 @@ export const VehicleModalForm = ({
   }, [open, data, setValue]);
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="lg">
+    <Dialog open={open} onClose={handleClose} maxWidth="sm">
       <DialogTitle>Cadastro de veículo</DialogTitle>
       <DialogContent
         sx={{
-          minWidth: "600px",
+          height: "100%",
+          minWidth: "300px",
+          maxWidth: "600px",
           minHeight: "300px",
+          maxHeight: "400px",
+          width: "calc(100% - 54px)",
         }}
       >
         <form onSubmit={handleSubmit(onSubmit)}>
